@@ -1,0 +1,121 @@
+extends layout
+block append head
+    #fb-root
+        script.
+            (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.5&appId=466500353471254";
+            fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+      
+    script(type='text/javascript').
+        window.onload = function(e){ 
+            $("#applyform").submit(function(event) {
+        
+                event.preventDefault();
+
+                var $form = $( this ),
+                    url = $form.attr( 'action' );
+
+                var posting = $.post( url, { first_name: $('#first_name').val(), last_name: $('#last_name').val()
+                    , email: $('#email').val(), country: $('#country').val(), street1: $('#street1').val()
+                    , street2: $('#street2').val(), suburb: $('#suburb').val() } );
+            
+                var address= $('#street1').val()+","+($('#street2').val()? $('#street2').val()+" ," : "")+$('#suburb').val()+", "+$('#country').val();
+                
+                posting.done(function( data ) {
+                    $('#applyform').hide();
+                    $("#result_title").removeClass('hidden');
+                    $("#result_title").text('The following data is saved!');
+                    
+                    $("#result_name").removeClass('hidden');
+                    $("#result_name").text($('#first_name').val()+" "+$('#last_name').val());
+                    
+                    $("#result_email").removeClass('hidden');
+                    $("#result_email").text($('#email').val());
+                    
+                    $("#result_address").removeClass('hidden');
+                    $("#result_address").text(address);
+                    
+
+                    
+                });
+            });
+        }
+block append content
+    form#applyform.form-horizontal(method='post',action='')
+        fieldset
+            // Form Name
+            h1.text-center #{title}
+            // Text input
+            .form-group
+              label.col-md-4.control-label(for='first_name') First Name
+              |   
+              |   
+              .col-md-4
+                input#first_name.form-control.input-md(name='first_name', type='text', placeholder='Enter name here',required='')
+            .form-group
+              label.col-md-4.control-label(for='last_name') Last Name
+              |   
+              |   
+              .col-md-4
+                input#last_name.form-control.input-md(name='last_name', type='text', placeholder='Enter name here',required='')
+            .form-group
+              label.col-md-4.control-label(for='email') Email
+              |   
+              |   
+              .col-md-4
+                input#email.form-control.input-md(name='email', type='text', placeholder='Enter name here',required='')
+            .form-group
+                label.col-md-4.control-label(for='address') Address
+                .col-md-10
+                    .grid
+                        .row
+                            label.col-md-6.control-label(for='country') Country:
+                            .col-md-3
+                                select#country.form-control(name='country')
+                                    option(value='Australia') Australia
+                                    |     
+                                    option(value='Sample_country1') Sample_country1
+                                    |     
+                                    option(value='Sample_country2') Sample_country2
+                                    |     
+                                    option(value='Sample_country3') Sample_country3
+                                    |     
+                                    option(value='Sample_country4') Sample_country4
+
+
+                        .row
+                            label.col-md-6.control-label(for='street1') Street 1:
+                            |   
+                            |   
+                            .col-md-3
+                                input#street1.form-control.input-md(name='street1', type='text', placeholder='Enter name here',required='')
+                        .row
+                            label.col-md-6.control-label(for='street2') Street 2:
+                            |   
+                            |   
+                            .col-md-3
+                                input#street2.form-control.input-md(name='street2', type='text', placeholder='Enter name here')
+                        .row
+                            label.col-md-6.control-label(for='suburb') Suburb:
+                            |   
+                            |   
+                            .col-md-3
+                                input#suburb.form-control.input-md(name='suburb', type='text', placeholder='Enter name here')
+
+            // Button (Double)
+            .form-group
+              label.col-md-4.control-label(for='send')
+              |   
+              .col-md-8
+                button#send.hvr-icon-fade.submit-button(name='send') Apply!
+                
+                a.fb-button(onclick='FB.login();') Apply with Facebook
+
+    .h1#result_title.text-center.hidden a
+    .h3#result_name.text-center.hidden b
+    .h3#result_email.text-center.hidden d
+    .h3#result_address.text-center.hidden e
